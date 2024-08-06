@@ -1,20 +1,33 @@
 // src/components/Auth/Register.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = (e) => {
+  const handleRegister = async(e) => {
     e.preventDefault();
-    // 这里可以添加实际的注册逻辑，例如 API 请求
-    if (username && password) {
-      // 注册成功后跳转到个人资料页面
-      navigate('/profile');
-    } else {
-      alert('Please enter username and password');
+    try {
+      const response = await axios.post('http://127.0.0.1:7001/api/register', { username, password });
+      if (response.data.success) {
+        navigate('/Login');
+      } else {
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      if (error.response) {
+        // 服务器返回状态码非2xx
+        setMessage(`Error: ${error.response.data.message}`);
+      } else if (error.request) {
+        // 请求已发出但未收到响应
+        setMessage('Error: No response received from server');
+      } else {
+        // 其他错误
+        setMessage(`Error: ${error.message}`);
+      }
     }
   };
 

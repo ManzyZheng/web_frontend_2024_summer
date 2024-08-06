@@ -1,28 +1,38 @@
-// src/components/Circles/CircleList.jsx
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const CircleList = () => {
   const [circles, setCircles] = useState([]);
 
   useEffect(() => {
     const fetchCircles = async () => {
-      const response = await fetch('/api/circles');
-      const data = await response.json();
-      setCircles(data);
+      try {
+        const response = await axios.get('http://127.0.0.1:7001/api/circles');
+        setCircles(response.data);
+      } catch (error) {
+        console.error('Error fetching circles:', error);
+      }
     };
+
     fetchCircles();
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {circles.map(circle => (
-        <Link to={`/circle/${circle.id}`} key={circle.id} className="p-4 border">
-          {circle.name}
-        </Link>
-      ))}
+    <div>
+      <h2>Circle List</h2>
+      {Array.isArray(circles) ? (
+        circles.map(circle => (
+          <div key={circle.id}>
+            <h3>{circle.name}</h3>
+            <p>{circle.description}</p>
+          </div>
+        ))
+      ) : (
+        <p>No circles available</p>
+      )}
     </div>
   );
 };
 
 export default CircleList;
+

@@ -1,22 +1,33 @@
-// src/components/Auth/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useUser } from '../../UserContext';
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // 这里可以添加实际的登录逻辑，例如 API 请求
-    if (username && password) {
-      // 登录成功后跳转到主页
-      navigate('/');
-    } else {
-      alert('Please enter username and password');
+    try {
+      const response = await axios.post("http://127.0.0.1:7001/api/login", {
+        username,
+        password
+      });
+      if (response.data.success) {
+        console.log("login");
+        setUser(response.data.data);
+        navigate("/home");
+      } else {
+        console.log("Invalid username or password");
+      }
+    } catch (err) {
+      console.log("An error occurred. Please try again later.");
     }
-  };
+  }
+    ;
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -40,7 +51,7 @@ const Login = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}          //输入框内容改变时，用更新 username 状态
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
               required
             />

@@ -1,52 +1,54 @@
-// src/components/Posts/CreatePost.jsx
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const CreatePost = ({ circleId }) => {
+const CreatePost = () => {
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
+  const [circleId, setCircleId] = useState(1); // example circleId
 
-  const handleCreatePost = async () => {
-    const formData = new FormData();
-    formData.append('circleId', circleId);
-    formData.append('content', content);
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    let imageUrl = '';
     if (image) {
-      formData.append('image', image);
+      const formData = new FormData();
+      formData.append('file', image);
+
+      // Upload image and get the URL
+      const imageUploadResponse = await axios.post('http://localhost:7001/api/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      imageUrl = imageUploadResponse.data.url;
     }
 
-    const response = await fetch('/api/posts', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (response.ok) {
-      setContent('');
-      setImage(null);
-    } else {
-      // 处理错误
+    try {
+      await axios.post('http://localhost:7001/api/posts', {
+        content,
+        circleId,
+        imageUrl
+      });
+      // Handle success (e.g., navigate or show a message)
+    } catch (error) {
+      console.error('Failed to create post:', error);
     }
   };
 
   return (
-    <div className="mb-4">
+    <form onSubmit={handleSubmit}>
       <textarea
-        className="w-full border px-3 py-2"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="输入帖子内容"
+        placeholder="What's on your mind?"
       />
-      <input
-        type="file"
-        className="w-full border px-3 py-2"
-        onChange={(e) => setImage(e.target.files[0])}
-      />
-      <button
-        className="bg-blue-500 text-white px-4 py-2 mt-2"
-        onClick={handleCreatePost}
-      >
-        发布
-      </button>
-    </div>
+      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <button type="submit">Post</button>
+    </form>
   );
 };
 
 export default CreatePost;
+
