@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../UserContext'; // 假设你的用户上下文文件路径
 
 const CreateCircle = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const { user } = useUser(); // 获取当前用户信息
   const navigate = useNavigate();
 
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/circles', {
+      const response = await axios.post('http://127.0.0.1:7001/api/circles', {
         name,
         description,
+        creator: user.username, // 添加创建人信息
       });
       if (response.data.success) {
         navigate(`/circle/${response.data.circle.id}`);
@@ -46,3 +49,4 @@ const CreateCircle = () => {
 };
 
 export default CreateCircle;
+
