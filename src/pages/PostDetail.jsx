@@ -88,7 +88,7 @@ const PostDetail = () => {
                         {post.imagePaths.map((path, index) => (
                             <img
                                 key={index}
-                                src={`http://localhost:7001/${path}`}
+                                src={`${path}`}
                                 alt={`Post image ${index + 1}`}
                                 className="w-full sm:w-1/2 lg:w-1/4 h-auto rounded-md shadow-sm"
                             />

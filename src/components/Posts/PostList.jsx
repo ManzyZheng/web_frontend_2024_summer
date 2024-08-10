@@ -23,15 +23,8 @@ const PostList = ({ posts }) => {
           <p className="text-lg font-semibold">{post.content}</p>
           <p className="text-sm text-gray-500">由 {post.creator} 创建于 {new Date(post.createdAt).toLocaleString()}</p>
           {Array.isArray(post.imagePaths) && post.imagePaths.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {post.imagePaths.map((path, index) => (
-                <img 
-                  key={index} 
-                  src={`http://localhost:7001/${path}`} 
-                  alt={`Post image ${index + 1}`} 
-                  className="max-w-full h-auto rounded-md"
-                />
-              ))}
+            <div className="mt-3 flex items-center justify-center bg-gray-100 p-2 rounded">
+              <span className="text-gray-600 text-sm">内有图片</span>
             </div>
           )}
         </div>
