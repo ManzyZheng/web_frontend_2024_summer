@@ -40,3 +40,9 @@
 .read-the-docs {
   color: #888;
 }
+
+.container {
+  width: 100%;
+  max-width: 1200px; /* 或其他适合的最大宽度 */
+  margin: 0 auto;
+}

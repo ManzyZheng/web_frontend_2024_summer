@@ -7,18 +7,18 @@ const Home = () => {
   const { user } = useUser();
 
   return (
-    <>
-      <div id="main">
-        {user ? `欢迎你, ${user.username}!` : '请登录'}
-      </div>
-      <div className="container mx-auto">
-        <h1 className="text-4xl font-bold">兴趣圈</h1>
-        <CreateCircle/>
+    <div className="min-h-screen bg-gray-100 p-">
+      <header className="bg-blue-400 text-white py-2 mb-3">
+        <div className="container mx-auto text-center">
+          <h1 className="text-2xl font-bold">欢迎你, {user ? user.username : '请登录'}!</h1>
+        </div>
+      </header>
+        <CreateCircle />
         <CircleList />
-      </div>
-    </>
+    </div>
   );
 };
 
 export default Home;
+
 

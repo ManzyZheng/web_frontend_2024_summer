@@ -1,69 +1,52 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useUser } from '../../UserContext'; // 假设你的用户上下文文件路径
+import { useUser } from '../../UserContext';
 import { useNavigate } from 'react-router-dom';
-
 
 const CreatePost = ({ circleId }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
-  const { user, setUser } = useUser(); // 获取当前用户信息并且可以更新用户信息
-  const [errorMessage, setErrorMessage] = useState(null); // 用于存储错误信息
+  const { user, setUser } = useUser();
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
 
-  // 处理图片选择
   const handleImageChange = (e) => {
     const files = e.target.files;
-  
     if (files.length > 0) {
-      setImages(Array.from(files)); // 确保正确转换文件列表为数组并存储到 state 中
-      console.log('Selected files:', files);
-      console.log('Number of files selected:', files.length);
-    } else {
-      console.log('No files selected');
+      setImages(Array.from(files));
     }
   };
-  
-  // 提交表单
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     let imageUrls = [];
     if (images.length > 0) {
       const formData = new FormData();
-      
-      // 将每个文件添加到 formData
       for (const image of images) {
-        formData.append('files', image); // 'files' 用于上传多个文件
+        formData.append('files', image);
       }
-  
       try {
         const imageUploadResponse = await axios.post('http://localhost:7001/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        console.log('Image upload response:', imageUploadResponse.data);
         imageUrls = imageUploadResponse.data.urls;
       } catch (error) {
-        console.error('Failed to upload images:', error);
+        setErrorMessage('图片上传失败，请稍后再试。');
         return;
       }
     }
-  
+
     try {
-      // 创建帖子
       const postResponse = await axios.post('http://localhost:7001/api/posts', {
         content,
         creator: user.username,
         circleId: Number(circleId),
-        imageUrls
+        imageUrls,
       });
-      
-      // 成功创建帖子后，更新用户的活动数据
+
       if (postResponse.data.success) {
         try {
-          const response=await axios.post('http://localhost:7001/api/increaseActivity', { username: user.username });
-          
-          // 更新用户状态（假设你的上下文中有setUser方法来更新用户信息）
+          const response = await axios.post('http://localhost:7001/api/increaseActivity', { username: user.username });
           setUser(response.data.data);
           navigate('/Profile');
         } catch (error) {
@@ -71,27 +54,41 @@ const CreatePost = ({ circleId }) => {
         }
       }
     } catch (error) {
-      console.error('Failed to create post:', error);
+      setErrorMessage('帖子创建失败，请稍后再试。');
     }
   };
-  
+
   return (
-    <form onSubmit={handleSubmit}>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="What's on your mind?"
-        required // 添加required确保内容不为空
-      />
-      <input 
-        type="file" 
-        accept="image/*" 
-        multiple // 允许选择多个图片
-        onChange={handleImageChange} 
-      />
-      <button type="submit">Post</button>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* 显示错误信息 */}
-    </form>
+    <div className="max-w-lg mx-auto bg-white p-4 rounded-lg shadow-md">
+      <form onSubmit={handleSubmit}>
+        <div className="mb-2">
+          <textarea
+            className="w-full p-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-600"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="你在想什么?"
+            rows="3" // 调整文本域高度
+            required
+          />
+        </div>
+        <div className="flex justify-between items-center">
+          <input
+            className="block w-auto text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+          />
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+            type="submit"
+          >
+            发布
+          </button>
+        </div>
+        {errorMessage && <p className="text-red-600 text-sm mt-2">{errorMessage}</p>}
+      </form>
+    </div>
   );
 };
 

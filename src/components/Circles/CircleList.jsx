@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 
 const CircleList = () => {
   const [circles, setCircles] = useState([]);
-  const navigate = useNavigate(); // 初始化 useNavigate 钩子
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCircles = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:7001/api/circles');
-        setCircles(response.data.circles); // 正确设置 circles 状态
+        setCircles(response.data.circles);
       } catch (error) {
         console.error('Error fetching circles:', error);
       }
@@ -19,27 +19,27 @@ const CircleList = () => {
     fetchCircles();
   }, []);
 
-  // 处理圈子点击事件
   const handleCircleClick = (id) => {
-    navigate(`/circle/${id}`); // 使用 navigate 跳转到指定圈子的详情页
+    navigate(`/circle/${id}`);
   };
 
   return (
-    <div>
-      <h2>Circle List</h2>
+    <div className="max-w-3xl mx-auto p-4">
+      <h2 className="text-2xl font-semibold mb-4 text-center">圈子列表</h2>
       {Array.isArray(circles) && circles.length > 0 ? (
         circles.map(circle => (
-          <div 
-            key={circle.id} 
-            onClick={() => handleCircleClick(circle.id)} // 添加点击事件
-            style={{ cursor: 'pointer', marginBottom: '10px' }} // 添加一些样式方便用户交互
+          <div
+            key={circle.id}
+            onClick={() => handleCircleClick(circle.id)}
+            className="bg-white shadow-md rounded-lg p-4 mb-4 hover:bg-blue-50 cursor-pointer transition duration-300 ease-in-out"
           >
-            <h3>{circle.id} : {circle.name} created by {circle.creator}</h3>
-            <p>{circle.description} </p>
+            <h3 className="text-xl font-bold text-blue-600">{circle.name}</h3>
+            <p className="text-gray-600">{circle.description}</p>
+            <p className="text-sm text-gray-500">创建者: {circle.creator}</p>
           </div>
         ))
       ) : (
-        <p>No circles available</p>
+        <p className="text-center text-gray-600">没有可用的圈子</p>
       )}
     </div>
   );

@@ -5,7 +5,6 @@ import PostList from '../components/Posts/PostList';
 import CreatePost from '../components/Posts/CreatePost';
 
 const Circle = () => {
-  // 获取路由参数中的 id，并转换为数字类型
   const { id } = useParams();
   const circleId = parseInt(id, 10);
 
@@ -16,8 +15,7 @@ const Circle = () => {
     const fetchCircle = async () => {
       try {
         const response = await axios.get(`http://localhost:7001/api/circles/${circleId}`);
-        if (response.data.success) {  // 检查请求是否成功
-          console.log("Circle data:", response.data.circle); // 调试输出
+        if (response.data.success) {
           setCircle(response.data.circle);
         } else {
           console.error('Failed to load circle:', response.data.message);
@@ -30,7 +28,7 @@ const Circle = () => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get(`http://localhost:7001/api/posts/circle/${circleId}`);
-        if (response.data.success) {  // 检查请求是否成功
+        if (response.data.success) {
           setPosts(response.data.posts);
         } else {
           console.error('Failed to load posts:', response.data.message);
@@ -45,18 +43,25 @@ const Circle = () => {
   }, [circleId]);
 
   if (!circle) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-8">加载中...</div>;
   }
 
   return (
-    <div>
-      <h1>{circle.name}</h1>
-      <p>{circle.description}</p>
-      <CreatePost circleId={circleId} />
-      <PostList posts={posts} />
+    <div className="container mx-auto p-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+        <h1 className="text-3xl font-bold text-blue-600 mb-4">{circle.name}</h1>
+        <p className="text-gray-700 mb-4">{circle.description}</p>
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+        <h2 className="text-2xl font-semibold mb-4">创建新帖子</h2>
+        <CreatePost circleId={circleId} />
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4">帖子列表</h2>
+        <PostList posts={posts} />
+      </div>
     </div>
   );
 };
 
 export default Circle;
-
