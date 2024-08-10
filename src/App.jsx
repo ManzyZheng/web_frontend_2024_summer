@@ -9,7 +9,6 @@ import Register from './components/Auth/Register';
 import PostDetail from './pages/PostDetail';
 import { UserProvider } from './UserContext'; // 确保路径正确
 import './App.css';
-
 const App = () => {
   return (
     <UserProvider>

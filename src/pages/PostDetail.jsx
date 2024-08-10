@@ -9,7 +9,7 @@ const PostDetail = () => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const { user, setUser } = useUser();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Create a navigate instance
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -77,6 +77,15 @@ const PostDetail = () => {
 
     return (
         <div className="container mx-auto p-6 bg-white shadow-md rounded-md">
+            <div className="mb-4">
+                <button
+                    onClick={() => navigate(-1)} // Go back to the previous page
+                    className="px-4 py-2 bg-gray-300 text-black rounded-md shadow-sm hover:bg-gray-400"
+                >
+                    返回
+                </button>
+            </div>
+
             <div className="post-content mb-6">
                 <h2 className="text-xl font-semibold mb-4 text-blue-600">帖子</h2>
                 <h1 className="text-1xl font-bold mb-2">{post.content}</h1>

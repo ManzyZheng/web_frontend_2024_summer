@@ -3,12 +3,11 @@ import axios from 'axios';
 import { useUser } from '../../UserContext';
 import { useNavigate } from 'react-router-dom';
 
-const CreatePost = ({ circleId }) => {
+const CreatePost = ({ circleId, onPostCreated }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const { user, setUser } = useUser();
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -48,7 +47,9 @@ const CreatePost = ({ circleId }) => {
         try {
           const response = await axios.post('http://localhost:7001/api/increaseActivity', { username: user.username });
           setUser(response.data.data);
-          navigate('/Profile');
+          setContent(''); // 清空输入框
+          setImages([]);  // 清空已选择的图片
+          onPostCreated(); // 触发父组件刷新
         } catch (error) {
           console.error('Failed to update user activity:', error);
         }
@@ -67,7 +68,7 @@ const CreatePost = ({ circleId }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="你在想什么?"
-            rows="3" // 调整文本域高度
+            rows="3"
             required
           />
         </div>
