@@ -6,6 +6,7 @@ import Circle from './pages/Circle';
 import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import PostDetail from './pages/PostDetail';
 import { UserProvider } from './UserContext'; // 确保路径正确
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/circle/:circleId/post/:postId" element={<PostDetail />} />  {/* 新增的路由 */}
         </Routes>
       </Router>
     </UserProvider>

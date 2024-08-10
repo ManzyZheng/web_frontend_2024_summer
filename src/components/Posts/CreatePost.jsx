@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../UserContext'; // 假设你的用户上下文文件路径
+import { useNavigate } from 'react-router-dom';
+
 
 const CreatePost = ({ circleId }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
-  const { user } = useUser(); // 获取当前用户信息
+  const { user, setUser } = useUser(); // 获取当前用户信息并且可以更新用户信息
   const [errorMessage, setErrorMessage] = useState(null); // 用于存储错误信息
+  const navigate = useNavigate();
 
   // 处理图片选择
   const handleImageChange = (e) => {
@@ -21,7 +24,6 @@ const CreatePost = ({ circleId }) => {
     }
   };
   
-
   // 提交表单
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,19 +50,31 @@ const CreatePost = ({ circleId }) => {
     }
   
     try {
-      await axios.post('http://localhost:7001/api/posts', {
+      // 创建帖子
+      const postResponse = await axios.post('http://localhost:7001/api/posts', {
         content,
         creator: user.username,
         circleId: Number(circleId),
         imageUrls
       });
-      // Handle success (e.g., navigate or show a message)
+      
+      // 成功创建帖子后，更新用户的活动数据
+      if (postResponse.data.success) {
+        try {
+          const response=await axios.post('http://localhost:7001/api/increaseActivity', { username: user.username });
+          
+          // 更新用户状态（假设你的上下文中有setUser方法来更新用户信息）
+          setUser(response.data.data);
+          navigate('/Profile');
+        } catch (error) {
+          console.error('Failed to update user activity:', error);
+        }
+      }
     } catch (error) {
       console.error('Failed to create post:', error);
     }
   };
   
-
   return (
     <form onSubmit={handleSubmit}>
       <textarea
